@@ -28,12 +28,44 @@ def print_data(data):
         pprint.pprint(entry)
 
 
+def my_max(dictionary):
+    return_dict = {'num_calls': 0, 'place': None}
+
+    for k,v in dictionary.items():
+        if int(v) > return_dict['num_calls']:
+            return_dict['place'] = k
+            return_dict['num_calls'] = int(v)
+    return return_dict
+
+
+def my_min(dictionary):
+    return_dict = {'num_calls': float('Inf'), 'place': None}
+    for k,v in dictionary.items():
+        if k == 'Unspecified':
+            continue
+        if int(v) < return_dict['num_calls']:
+            return_dict['place'] = k
+            return_dict['num_calls'] = int(v)
+    return return_dict
+
+
 def get_most_noisy_city_and_borough(data):
     """ fill in the Nones for the dictionary below using the bar party data """
     noisiest_city_and_borough = {'city': None, 'borough': None, 'num_city_calls': None, 'num_borough_calls': None}
+    aggregate_city = {}
+    aggregate_borough = {}
+    for item in data[1:]:
+        aggregate_city.setdefault(item['city'], 0)
+        aggregate_borough.setdefault(item['borough'], 0)
+        aggregate_city[item['city']] += int(item['num_calls'])
+        aggregate_borough[item['borough']] += int(item['num_calls'])
 
-    # write code here to find the noisiest city and borough and their respective metrics
-
+    noisiest_city_dict = my_max(aggregate_city)
+    noisiest_borough_dict = my_max(aggregate_borough)
+    noisiest_city_and_borough['city'] = noisiest_city_dict['place']
+    noisiest_city_and_borough['num_city_calls'] = noisiest_city_dict['num_calls']
+    noisiest_city_and_borough['borough'] = noisiest_borough_dict['place']
+    noisiest_city_and_borough['num_borough_calls'] = noisiest_borough_dict['num_calls']
     return noisiest_city_and_borough
 
 
@@ -42,8 +74,20 @@ def get_quietest_city_and_borough(data):
 
     quietest_city_and_borough = {'city': None, 'borough': None, 'num_city_calls': None, 'num_borough_calls': None}
 
-    # write code here to find the quietest city and borough and their respective metrics
+    aggregate_city = {}
+    aggregate_borough = {}
+    for item in data[1:]:
+        aggregate_city.setdefault(item['city'], 0)
+        aggregate_borough.setdefault(item['borough'], 0)
+        aggregate_city[item['city']] += int(item['num_calls'])
+        aggregate_borough[item['borough']] += int(item['num_calls'])
 
+    quietest_city_dict = my_min(aggregate_city)
+    quietest_borough_dict = my_min(aggregate_borough)
+    quietest_city_and_borough['city'] = quietest_city_dict['place']
+    quietest_city_and_borough['num_city_calls'] = quietest_city_dict['num_calls']
+    quietest_city_and_borough['borough'] = quietest_borough_dict['place']
+    quietest_city_and_borough['num_borough_calls'] = quietest_borough_dict['num_calls']
     return quietest_city_and_borough
 
 
@@ -51,7 +95,7 @@ if __name__ == '__main__':
     bar_data = get_bar_party_data()
 
     # uncomment the line below to see what the data looks like
-    # print_data(bar_data)
+    #print_data(bar_data)
 
     noisy_metrics = get_most_noisy_city_and_borough(bar_data)
 
